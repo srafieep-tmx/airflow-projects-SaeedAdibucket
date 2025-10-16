@@ -5,16 +5,12 @@ from airflow.providers.amazon.aws.operators.s3 import (S3CopyObjectOperator, S3L
 from pendulum import datetime
 
 MY_S3_BUCKET = "aditya-saeed-landing-bucket"
-MY_FIRST_FOLDER = "landing-file"
+MY_FIRST_FOLDER = "landing-file/"
 MY_S3_BUCKET_DELIMITER = "/"
 MY_FILE_NAME = "tripdata.csv"
 AWS_CONN_ID = "aws_conn"
 
-'''
-DEST_BUCKET = "saeed-rawdata-bucket"
-SOURCE_KEY = "uploads/2025/data_input.csv"
-DEST_KEY = "copied/2025/data_input.csv"  
-'''
+
 
 MY_S3_BUCKET_TO_COPY_TO = "saeed-rawdata-bucket"
 
