@@ -22,7 +22,7 @@ my_dataset = Dataset(
 )
 
 @dag(
-    dag_id ="downstream_datasets_taskflow_usecase",
+    dag_id ="file_transfer_btw_s3s",
     start_date = datetime(2022, 12, 1),
     schedule = None,
     catchup = False,
