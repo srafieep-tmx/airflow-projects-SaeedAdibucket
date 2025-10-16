@@ -1,10 +1,10 @@
 from airflow.decorators import dag, task
 from airflow import Dataset
-from datetime import datetime, timedelta
+#from datetime import datetime, timedelta
 from airflow.providers.amazon.aws.operators.s3 import (S3CopyObjectOperator, S3ListOperator)
-import pendulum
+from pendulum import datetime
 
-SOURCE_BUCKET = "aditya-saeed-landing-bucket"
+MY_S3_BUCKET = "aditya-saeed-landing-bucket"
 MY_FIRST_FOLDER = "landing-file"
 MY_S3_BUCKET_DELIMITER = "/"
 MY_FILE_NAME = "tripdata.csv"
@@ -16,9 +16,10 @@ SOURCE_KEY = "uploads/2025/data_input.csv"
 DEST_KEY = "copied/2025/data_input.csv"  
 '''
 
-DEST_BUCKET = "saeed-rawdata-bucket"
+MY_S3_BUCKET_TO_COPY_TO = "saeed-rawdata-bucket"
+
 my_dataset = Dataset(
-    f's3://{SOURCE_BUCKET}{MY_S3_BUCKET_DELIMITER}{MY_FIRST_FOLDER}{MY_FILE_NAME}'
+    f's3://{MY_S3_BUCKET}{MY_S3_BUCKET_DELIMITER}{MY_FIRST_FOLDER}{MY_FILE_NAME}'
 )
 
 @dag(
@@ -35,7 +36,7 @@ def downstream_datasets_taskflow_usecase():
     list_files = S3ListOperator(
         task_id = f'list_files',
         aws_conn_id = AWS_CONN_ID,
-        bucket = SOURCE_BUCKET,
+        bucket = MY_S3_BUCKET,
         prefix = MY_FIRST_FOLDER,
         delimiter = MY_S3_BUCKET_DELIMITER,
     )
@@ -48,8 +49,8 @@ def downstream_datasets_taskflow_usecase():
     ).expand_kwargs(
         list_files.output.map(
             lambda x:{
-                "source_bucket_key": f"s3://{SOURCE_BUCKET}{MY_S3_BUCKET_DELIMITER}{x}",
-                "dest_bucket_key" : f"s3://{DEST_BUCKET}{MY_S3_BUCKET_DELIMITER}"
+                "source_bucket_key": f"s3://{MY_S3_BUCKET}{MY_S3_BUCKET_DELIMITER}{x}",
+                "dest_bucket_key" : f"s3://{MY_S3_BUCKET_TO_COPY_TO}{MY_S3_BUCKET_DELIMITER}"
             }
         )
     )
