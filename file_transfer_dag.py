@@ -24,6 +24,7 @@ my_dataset = Dataset(
     schedule = None,
     catchup = False,
     tags = ['datasets', 'taskflow', 'usecase'],
+
 )
 def downstream_datasets_taskflow_usecase():
 
@@ -42,11 +43,14 @@ def downstream_datasets_taskflow_usecase():
     copy_files = S3CopyObjectOperator.partial(
         task_id = "copy_files",
         aws_conn_id = AWS_CONN_ID,
+        source_bucket_name = MY_S3_BUCKET,
+        dest_bucket_name = MY_S3_BUCKET_TO_COPY_TO,
+        email_on_failure = False,
     ).expand_kwargs(
         list_files.output.map(
             lambda x:{
-                "source_bucket_key": f"s3://{MY_S3_BUCKET}{MY_S3_BUCKET_DELIMITER}{x}",
-                "dest_bucket_key" : f"s3://{MY_S3_BUCKET_TO_COPY_TO}{MY_S3_BUCKET_DELIMITER}"
+                "source_bucket_key": x,
+                "dest_bucket_key": x               
             }
         )
     )
