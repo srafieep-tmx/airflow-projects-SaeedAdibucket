@@ -39,7 +39,7 @@ default_args = {
 
 )
 def move_etl():
-        
+    
     start_task = BashOperator(
     task_id="start_task",
     bash_command="echo 'Workflow started for {{ ds }}'",
@@ -89,8 +89,8 @@ def move_etl():
         #########################################################################################################################
         # Transform the data using pandas dataframe
 
-        @task
-        def etl(raw_file_key: str):
+    @task
+    def etl(raw_file_key: str):
             '''
             This function reads the file from the S3 bucket and conduct some transformation on it
             '''
@@ -132,8 +132,8 @@ def move_etl():
         
         ##########################################################################################################################
         # Load the data into another S3 bucket
-        @task
-        def write_transformed_s3(transformed_data_csv: str):
+    @task
+    def write_transformed_s3(transformed_data_csv: str):
             '''
             This function will take the string from the previous step and upload it to the final s3 bucket     
             '''
@@ -157,10 +157,10 @@ def move_etl():
             return FINAL_KEY
         
         # --- Define the Dependencies ---
-        task_move = move_landing_raw()
-        task_etl = etl(raw_file_key=task_move)
-        task_write = write_transformed_s3(transformed_data_csv=task_etl)
+    task_move = move_landing_raw()
+    task_etl = etl(raw_file_key=task_move)
+    task_write = write_transformed_s3(transformed_data_csv=task_etl)
 
-        start_task >> task_move >> task_etl >> task_write
+    start_task >> task_move >> task_etl >> task_write
 
 move_etl()
