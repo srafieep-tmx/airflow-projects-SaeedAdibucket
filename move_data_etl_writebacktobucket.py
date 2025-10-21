@@ -80,9 +80,9 @@ def move_etl():
         )
 
         # 2. Delete the original file ONLY after a successful copy
-        s3.delete_object(Bucket=landing_bucket, Key=SOURCE_KEY)
+        #s3.delete_object(Bucket=landing_bucket, Key=SOURCE_KEY)
         
-        print(f"Successfully moved and deleted source. New raw key: {DEST_KEY}")
+        print(f"Successfully moved. New raw key: {DEST_KEY}")
         
         return DEST_KEY # Pass the new key to the next task via XCom
     
