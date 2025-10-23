@@ -5,7 +5,6 @@ from airflow.decorators import dag, task
 from airflow import Dataset
 import pandas as pd
 
-##########################################################################
 ##################  CONFIGURATION ########################################
 # Landing bucket
 landing_bucket = "aditya-saeed-landing-bucket"
@@ -16,33 +15,20 @@ file_name = "tripdata.csv"
 # Raw bucket
 raw_bucket = "saeed-rawdata-bucket"
 
-
 # Transformed bucket
 transformed_bucket = 'saeed-transformed-bucket'
 
-
-
 aws_conn_id = "aws_conn"
-
-
-my_dataset = Dataset(
-    f's3://{landing_bucket}{landing_bucket_delimiter}{landing_folder}{file_name}'
-)
 
 @dag(
     dag_id ="move_etl_with_conn",
-    start_date = datetime(2022, 12, 1),
+    start_date = datetime(2025, 10, 21),
     schedule = None,
     catchup = False,
-    tags = ['move', 'etl', 'write'],
+    tags = ['move', 'etl', 'loading'],
 
 )
 def move_etl_with_conn():
-
-    start_task= BashOperator(
-        task_id = "start_task",
-        bash_command = 'echo "This workflow started for {{ds}} "'
-    )
 
     # list all teh files in the first folder in S3 bucket
     list_files = S3ListOperator(
@@ -93,9 +79,7 @@ def move_etl_with_conn():
             "filename": raw_key.split('/')[-1] 
         }
     
-    etl_results = etl.expand(raw_file_key = copy_files.output)
-
-        
+       
     
     @task
     def write_to_s3(result):
@@ -111,9 +95,10 @@ def move_etl_with_conn():
             
             # Pandas writes the DataFrame directly to the S3 URI via s3fs
         df.to_csv(FINAL_S3_URI, index=False)
-
+        
+    list_files >> copy_files
+    etl_results = etl.expand(raw_file_key = copy_files.output)
     write_task = write_to_s3(result=etl_results)
     
-    start_task >> list_files >> copy_files >> etl_results >> write_task
 
 move_etl_with_conn()
