@@ -9,6 +9,7 @@ import pandas as pd
 raw_bucket_delimiter = "/"
 file_name = "customers.csv"
 raw_bucket = "saeed-rawdata-bucket"
+raw_prefix = "customer_data"
 transformed_bucket = 'saeed-transformed-bucket'
 
 aws_conn_id = "aws_conn"
@@ -36,7 +37,7 @@ def transformation_load():
         """
         This function transform the data and returns a csv file than can be then uploaded to the s3 bucket
         """
-        raw_key = params["input_s3_key"]['default']
+        raw_key = f'{raw_prefix}/{params["input_s3_key"]['default']}'
         source_s3_uri = f's3://{raw_bucket}{raw_bucket_delimiter}{raw_key}'
         
         print(f"Reading data directly from S3 using Pandas: {source_s3_uri}")
